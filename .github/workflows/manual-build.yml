@@ -1,6 +1,9 @@
-name: Manual multi-platform build
+name: Multi-platform package build
 
 on:
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
     inputs:
       target:
@@ -78,7 +81,7 @@ jobs:
               }
             }
 
-            const requested = context.payload.inputs.target
+            const requested = context.payload.inputs?.target || 'all'
             const selected = requested === 'all'
               ? Object.values(builds)
               : [builds[requested]]

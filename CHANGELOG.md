@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
-- manually dispatched package builds for macOS ARM64, Ubuntu AMD64/ARM64, and Windows AMD64/ARM64
+- manual and tag-triggered package builds for macOS ARM64, Ubuntu AMD64/ARM64, and Windows AMD64/ARM64
 
 ### Fixed
 - fix snap startup crash
