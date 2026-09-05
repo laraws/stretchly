@@ -1,0 +1,141 @@
+name: Manual multi-platform build
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Package to build
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - macos-arm64
+          - ubuntu-amd64
+          - ubuntu-arm64
+          - windows-amd64
+          - windows-arm64
+
+permissions:
+  contents: read
+
+env:
+  RETENTION_DAYS: 30
+
+jobs:
+  plan:
+    name: Prepare build matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.targets.outputs.result }}
+    steps:
+      - name: Select targets
+        id: targets
+        uses: actions/github-script@v8
+        with:
+          result-encoding: string
+          script: |
+            const builds = {
+              'macos-arm64': {
+                id: 'macos-arm64',
+                os: 'macos-15',
+                platform: 'mac',
+                arch: 'arm64',
+                targets: 'dmg',
+                artifacts: 'dist/*.dmg'
+              },
+              'ubuntu-amd64': {
+                id: 'ubuntu-amd64',
+                os: 'ubuntu-24.04',
+                platform: 'linux',
+                arch: 'x64',
+                targets: 'AppImage deb',
+                artifacts: 'dist/*.AppImage\ndist/*.deb'
+              },
+              'ubuntu-arm64': {
+                id: 'ubuntu-arm64',
+                os: 'ubuntu-24.04-arm',
+                platform: 'linux',
+                arch: 'arm64',
+                targets: 'AppImage deb',
+                artifacts: 'dist/*.AppImage\ndist/*.deb'
+              },
+              'windows-amd64': {
+                id: 'windows-amd64',
+                os: 'windows-2025',
+                platform: 'win',
+                arch: 'x64',
+                targets: 'nsis portable',
+                artifacts: 'dist/*.exe'
+              },
+              'windows-arm64': {
+                id: 'windows-arm64',
+                os: 'windows-11-arm',
+                platform: 'win',
+                arch: 'arm64',
+                targets: 'nsis portable',
+                artifacts: 'dist/*.exe'
+              }
+            }
+
+            const requested = context.payload.inputs.target
+            const selected = requested === 'all'
+              ? Object.values(builds)
+              : [builds[requested]]
+
+            return JSON.stringify({ include: selected })
+
+  build:
+    name: Build ${{ matrix.id }}
+    needs: plan
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install Linux packaging dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            libarchive-tools \
+            pkg-config \
+            ruby-full
+          sudo gem install fpm -v 1.16.0
+
+      - name: Setup build environment
+        uses: ./.github/actions/setup-build
+
+      - name: Build Linux packages
+        if: runner.os == 'Linux'
+        run: >-
+          node_modules/.bin/electron-builder
+          --${{ matrix.platform }}
+          ${{ matrix.targets }}
+          --${{ matrix.arch }}
+          --publish=never
+        env:
+          USE_SYSTEM_FPM: true
+
+      - name: Build macOS or Windows packages
+        if: runner.os != 'Linux'
+        run: >-
+          node_modules/.bin/electron-builder
+          --${{ matrix.platform }}
+          ${{ matrix.targets }}
+          --${{ matrix.arch }}
+          --publish=never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v6
+        with:
+          name: stretchly-${{ matrix.id }}-${{ github.run_number }}
+          path: ${{ matrix.artifacts }}
+          if-no-files-found: error
+          retention-days: ${{ env.RETENTION_DAYS }}
