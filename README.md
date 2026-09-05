@@ -466,7 +466,7 @@ In case you have disabled showing of breaks on all monitors, you can specify whi
 - `"0"` (or `0`), `"1"`, `"2"` etc, where `"0"` is the first monitor returned by OS and so forth
 
 #### Show current time in breaks [![Contributor Preferences](https://img.shields.io/badge/Contributor_Preferences-✔-success)](#contributor-preferences)
-To show current time in breaks, set the value of `currentTimeInBreaks` from `false` to `true`.
+Break screens show a centered line with the current time, date, and weekday by default. The line uses English date names and a 24-hour clock without seconds. Set `currentTimeInBreaks` to `false` to hide it.
 
 #### Break Health Mode
 Inspired by the screen-edge vignette used in video games to indicate low health, this mode adds a visual indicator around the edges of your break screen. The effect starts subtle and grows more intense each time you skip or postpone a break, and fades back down when you let breaks complete naturally. To enable it, set `breakHealthMode` to `true`.

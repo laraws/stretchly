@@ -1,6 +1,7 @@
 import HtmlTranslate from './utils/htmlTranslate.js'
 import applyBreakHealthEffect from './utils/breakHealthEffect.js'
 import createRunOnce from './utils/runOnce.js'
+import formatBreakDateTime from './utils/breakDateTime.js'
 import './platform.js'
 
 window.onload = async (event) => {
@@ -68,17 +69,20 @@ window.onload = async (event) => {
 
   const locale = await window.settings.get('language')
   const showCurrentTime = await window.settings.get('currentTimeInBreaks')
-  const currentTimeElement = showCurrentTime ? document.querySelector('.breaks > :last-child') : null
+  const currentTimeElement = showCurrentTime ? document.querySelector('.current-date-time') : null
 
   manualFinishElement.onclick = runOnce(() => window.breaks.finishBreak(manualAwaiting))
 
   let lastShownSecond = null
+  let lastShownMinute = null
 
   setInterval(async () => {
-    if (showCurrentTime) {
-      currentTimeElement.innerHTML = (new Date()).toLocaleTimeString()
-    }
     const now = Date.now()
+    const currentMinute = Math.floor(now / 60000)
+    if (showCurrentTime && currentMinute !== lastShownMinute) {
+      currentTimeElement.textContent = formatBreakDateTime(new Date(now))
+      lastShownMinute = currentMinute
+    }
     const passed = now - started
     const currentSecond = Math.floor(passed / 1000)
     const secondChanged = currentSecond !== lastShownSecond

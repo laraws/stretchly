@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.22.3] - 2026-09-05
+### Changed
+- Mini Break and Long Break screens now show a centered English date and weekday with 24-hour time and no seconds
+- current date and time display is enabled by default
+
 ## [1.22.2] - 2026-09-05
 ### Added
 - manual and tag-triggered package builds for macOS ARM64, Ubuntu AMD64/ARM64, and Windows AMD64/ARM64

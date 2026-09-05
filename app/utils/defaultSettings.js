@@ -71,7 +71,7 @@ export default {
   screen: 'primary',
   breakContentScreen: 'all',
   trayIconStyle: 'default',
-  currentTimeInBreaks: false,
+  currentTimeInBreaks: true,
   showTrayIcon: true,
   skipToNextScheduledBreakShortcut: '',
   skipToNextMiniBreakShortcut: '',
