@@ -1,6 +1,6 @@
 {
   "name": "Stretchly",
-  "version": "1.22.1",
+  "version": "1.22.2",
   "description": "The break time reminder app",
   "main": "app/main.js",
   "type": "module",
@@ -110,9 +110,10 @@
       ]
     },
     "portable": {
-      "artifactName": "${productName} Portable ${version}.${ext}"
+      "artifactName": "${productName} Portable ${version}-${arch}.${ext}"
     },
     "nsis": {
+      "artifactName": "${productName} Setup ${version}-${arch}.${ext}",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
     },

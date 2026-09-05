@@ -5,8 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [1.22.2] - 2026-09-05
 ### Added
 - manual and tag-triggered package builds for macOS ARM64, Ubuntu AMD64/ARM64, and Windows AMD64/ARM64
+
+### Changed
+- version update checks and download links now use releases from `laraws/stretchly`
+- Windows package filenames now include their CPU architecture
 
 ### Fixed
 - fix snap startup crash
